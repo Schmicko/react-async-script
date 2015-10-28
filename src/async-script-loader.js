@@ -82,23 +82,31 @@ export default function makeAsyncScript(Component, scriptURL, options) {
             }
           }
         }
+
+        // Remove the global callback if it exists.
+        if (callbackName && typeof window !== "undefined") {
+            delete window[callbackName];
+        }
       };
 
-      if (callbackName && typeof window !== "undefined") {
-        window[callbackName] = AsyncScriptLoader.asyncScriptLoaderTriggerOnScriptLoaded;
-      }
-
-      script.onload = () => {
+      let scriptOnLoad = function(){
         let mapEntry = SCRIPT_MAP.get(scriptURL);
         mapEntry.loaded = true;
         callObserverFuncAndRemoveObserver( (observer) => {
-          if (callbackName) {
-            return false;
-          }
           observer(mapEntry);
           return true;
         });
-      };
+      }
+
+      if (callbackName && typeof window !== "undefined") {
+        // If user has provided a callbackName, allow the script being loaded
+        // to trigger the callback.
+        window[callbackName] = scriptOnLoad;
+      } else {
+        // Otherwise listen fot the scripts onLoad event.
+        script.onload = scriptOnLoad;
+      }
+
       script.onerror = (event) => {
         let mapEntry = SCRIPT_MAP.get(scriptURL);
         mapEntry.errored = true;
