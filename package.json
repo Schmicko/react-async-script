@@ -26,18 +26,6 @@
   "bugs": {
     "url": "https://github.com/dozoisch/react-async-script/issues"
   },
-  "browserify": {
-    "transform": [
-      [
-        "babelify",
-        {
-          "optional": [
-            "runtime"
-          ]
-        }
-      ]
-    ]
-  },
   "homepage": "https://github.com/dozoisch/react-async-script",
   "devDependencies": {
     "babel": "~5.8.21",
